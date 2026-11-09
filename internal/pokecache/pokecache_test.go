@@ -39,9 +39,25 @@ func TestAddGet(t *testing.T) {
 	}
 }
 
+func TestFreshEntryStays(t *testing.T) {
+	const interval = 100 * time.Millisecond
+	cache := NewCache(interval)
+	cache.Add("https://example.com", []byte("testdata"))
+
+	// check well before the entry could expire
+	time.Sleep(interval / 2)
+
+	_, ok := cache.Get("https://example.com")
+	if !ok {
+		t.Errorf("expected fresh entry to still be in the cache")
+		return
+	}
+}
+
 func TestReapLoop(t *testing.T) {
 	const baseTime = 5 * time.Millisecond
-	const waitTime = baseTime + 5*time.Millisecond
+	// entry expires after one interval; leave room for extra ticks to reap it
+	const waitTime = baseTime * 4
 	cache := NewCache(baseTime)
 	cache.Add("https://example.com", []byte("testdata"))
 
