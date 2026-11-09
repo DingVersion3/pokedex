@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
 	"os"
@@ -18,6 +19,33 @@ type cliCommand struct {
 	name        string
 	description string
 	callback    func(cfg *Config, params []string) error
+}
+
+func startRepl(cfg *Config) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		fmt.Print("Pokedex > ")
+		scanner.Scan()
+		input := scanner.Text()
+
+		words := cleanInput(input)
+		if len(words) == 0 {
+			continue
+		}
+
+		commandName := words[0]
+		cmd, ok := cfg.Commands[commandName]
+		if !ok {
+			fmt.Println("Unknown command")
+			continue
+		}
+
+		err := cmd.callback(cfg, words[1:])
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }
 
 func getCommands() map[string]cliCommand {
@@ -75,7 +103,7 @@ func commandHelp(cfg *Config, params []string) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println()
-	for _, cmd := range getCommands() {
+	for _, cmd := range cfg.Commands {
 		fmt.Printf("%s: %s\n", cmd.name, cmd.description)
 	}
 	return nil

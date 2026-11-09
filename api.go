@@ -7,6 +7,7 @@ type Config struct {
 	Previous *string
 	Cache    *pokecache.Cache
 	Pokedex  map[string]Pokemon
+	Commands map[string]cliCommand
 }
 
 type PokeAPIResponse struct {
