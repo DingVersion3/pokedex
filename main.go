@@ -8,7 +8,7 @@ import (
 
 func main() {
 	cfg := &Config{
-		Cache:    pokecache.NewCache(5 * time.Second),
+		Cache:    pokecache.NewCache(5 * time.Minute),
 		Pokedex:  make(map[string]Pokemon),
 		Commands: getCommands(),
 	}
